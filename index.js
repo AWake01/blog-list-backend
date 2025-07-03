@@ -1,18 +1,6 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const logger = require('./utils/logger')
-
-const Blog = require('./models/blog')
+const app = require('./app')
 const config = require('./utils/config')
-
-const app = express()
-
-app.use(express.json())
-
-const mongoUrl = 
-mongoose.connect(config.MONGODB_URI)
-
-app.use(express.json())
+const logger = require('./utils/logger')
 
 //CONNECTION
 const PORT = config.PORT

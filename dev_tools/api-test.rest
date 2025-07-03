@@ -5,9 +5,9 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    "title": "test",
-    "author": "Joe Blogs",
-    "url": "http//:test",
-    "likes": 4  
+    "title": "test 2",
+    "author": "Sue Green",
+    "url": "http//:test2",
+    "likes": 10  
 }
 ###
