@@ -1,29 +1,13 @@
 const express = require('express')
 const mongoose = require('mongoose')
 
+const Blog = require('./models/blog')
+
 const app = express()
 
 require('dotenv').config()
 app.use(express.json())
 const url = process.env.MONGODB_URI
-
-//MONGODB
-const blogSchema = mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-})
-
-blogSchema.set('toJSON', {  //Convert id to string and remove unused fields in response
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Blog = mongoose.model('Blog', blogSchema)
 
 const mongoUrl = 
 mongoose.connect(url)
