@@ -6,7 +6,17 @@ const Blog = require("../models/blog")
 //all
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({})
-  response.json(notes)
+  response.json(blogs)
+})
+
+//by id
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  if(note) {
+    response.json(blog)
+  } else {
+    response.status(404).end()
+  }
 })
 
 //POST
