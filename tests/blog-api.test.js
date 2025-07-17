@@ -63,6 +63,25 @@ describe('POST requests', () => {
         assert.strictEqual(response.body.length, helper.initalBlogs.length + 1)
         assert(titles.includes('New Blog'))
     })
+
+    test('POST likes property defaults to zero if missing', async () => {     //Pass
+        const newBlog = {
+            title: "Like Missing",
+            author: "Author Like Missing ",
+            url: "https://LikeMissing.com/",
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+
+        const blogs = await helper.blogsInDB()
+        const foundBlog = await blogs.find(blog => blog.title === newBlog.title)
+
+        assert.strictEqual(foundBlog.likes, 0)
+    })
 })
 
 //CLOSE CONNECTION
