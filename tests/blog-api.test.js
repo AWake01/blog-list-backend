@@ -68,7 +68,7 @@ describe('POST requests', () => {
         const newBlog = {
             title: "Like Missing",
             author: "Author Like Missing ",
-            url: "https://LikeMissing.com/",
+            url: "https://likeMissing.com/",
         }
 
         await api
@@ -81,6 +81,42 @@ describe('POST requests', () => {
         const foundBlog = await blogs.find(blog => blog.title === newBlog.title)
 
         assert.strictEqual(foundBlog.likes, 0)
+    })
+
+    test('POST status 400 if title attribute is missing', async () => {     //Pass
+        const newBlog = {
+            author: "Author Title Missing ",
+            url: "//titleMissing.com/",
+            likes: 2,
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(400)
+    })
+    test('POST status 400 if url attribute is missing', async () => {     //Pass
+        const newBlog = {
+            title: "Url Missing",
+            author: "Author Url Missing ",
+            likes: 3,
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(400)
+    })
+    test('POST status 400 if title and url attribute are missing', async () => {     //Pass
+        const newBlog = {
+            author: "Author Title, Url Missing ",
+            likes: 3,
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(400)
     })
 })
 

@@ -32,7 +32,12 @@ blogsRouter.post('/', async (request, response) => {
   })
 
   const savedBlog = await blog.save()
-  response.status(201).json(savedBlog)
+
+  if(!savedBlog.title || !savedBlog.url){ //Must have title and url
+    response.status(400).end()
+  } else {
+    response.status(201).json(savedBlog)
+  }
 })
 
 
