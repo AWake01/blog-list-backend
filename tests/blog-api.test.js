@@ -120,6 +120,23 @@ describe('POST requests', () => {
     })
 })
 
+describe('DELETE requests', () => {
+    test('a blog can be deleted', async () => {
+        const notesAtStart = await helper.blogsInDB()
+        const blogToDelete = notesAtStart[0]
+
+        await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+        const notesAfterDeletion = await helper.blogsInDB()
+
+        const titles = notesAfterDeletion.map(blog => blog.title)   //Content is removed
+
+        assert(!titles.includes(blogToDelete.title))
+
+        assert.strictEqual(notesAfterDeletion.length, notesAtStart.length - 1)  //Correct number of items left
+    })
+})
+
 //CLOSE CONNECTION
 after(async () => {
     await mongoose.connection.close()
