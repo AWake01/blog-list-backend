@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+const blog = require('../models/blog')
 const Blog = require("../models/blog")
 //const app = require('../app')
 
@@ -45,6 +46,22 @@ blogsRouter.post('/', async (request, response) => {
 blogsRouter.delete('/:id', async (request, response) => {
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
+})
+
+//PUT
+//blog likes
+blogsRouter.put('/:id', async (request, response) => {
+  const body = request.body
+
+  const blogToUpdate = await Blog.findById(request.params.id)
+  if(!blogToUpdate) {
+    return response.status(404).end()
+  }
+
+  blogToUpdate.likes = body.likes
+
+  await blogToUpdate.save()
+  response.json(blogToUpdate)
 })
 
 

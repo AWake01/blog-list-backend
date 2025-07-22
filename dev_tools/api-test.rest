@@ -1,7 +1,7 @@
-GET http://localhost:3003/api/blogs
+GET http://localhost:3001/api/blogs
 ###
 
-POST http://localhost:3003/api/blogs HTTP/1.1
+POST http://localhost:3001/api/blogs HTTP/1.1
 content-type: application/json
 
 {
@@ -10,4 +10,14 @@ content-type: application/json
     "url": "http//:test2",
     "likes": 10  
 }
+
 ###
+PUT http://localhost:3001/api/blogs HTTP/1.1
+content-type: application/json
+
+{
+    "title": "test 2",
+    "author": "Sue Green",
+    "url": "http//:test2",
+    "likes": 5  
+}

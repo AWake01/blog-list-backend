@@ -120,20 +120,55 @@ describe('POST requests', () => {
     })
 })
 
+//DELETE requests
 describe('DELETE requests', () => {
     test('a blog can be deleted', async () => {
-        const notesAtStart = await helper.blogsInDB()
-        const blogToDelete = notesAtStart[0]
+        const blogsAtStart = await helper.blogsInDB()
+        const blogToDelete = blogsAtStart[0]
 
         await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
-        const notesAfterDeletion = await helper.blogsInDB()
+        const blogAfterDeletion = await helper.blogsInDB()
 
-        const titles = notesAfterDeletion.map(blog => blog.title)   //Content is removed
+        const titles = blogAfterDeletion.map(blog => blog.title)   //Content is removed
 
         assert(!titles.includes(blogToDelete.title))
 
-        assert.strictEqual(notesAfterDeletion.length, notesAtStart.length - 1)  //Correct number of items left
+        assert.strictEqual(blogAfterDeletion.length, blogsAtStart.length - 1)  //Correct number of items left
+    })
+})
+
+//PUT requests
+describe('PUT requests', () => {
+    test('likes value can be updated', async () => {
+        const blogsAtStart = await helper.blogsInDB()
+        const blogToUpdate = blogsAtStart[0]
+
+        blogToUpdate.likes = 10     // 7 > 10
+
+        await api.put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogToUpdate)
+            .expect('Content-Type', /application\/json/)
+
+        const blogsAfterUpdate = await helper.blogsInDB()
+
+        //const likes = blogSAfterUpdate.map(blog => blog.likes)   //Content is removed
+
+        const updatedBlog = blogsAfterUpdate.find(blog => blog.id === blogToUpdate.id)
+
+        assert.strictEqual(updatedBlog.likes, blogToUpdate.likes) // === 10
+    })
+
+    test('cannot update a non-existent blog', async () => {
+        const blogsAtStart = await helper.blogsInDB()
+        const blogToUpdate = blogsAtStart[0]
+        blogToUpdate.id = 'fakeid'
+
+        blogToUpdate.likes = 10     // 7 > 10
+
+        await api.put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogToUpdate)
+            .expect(400)
     })
 })
 

@@ -4,7 +4,7 @@
   "description": "Backend for FullStackOpen part 4A exercises",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=productionNODE_ENV=production node index.js",
+    "start": "cross-env NODE_ENV=production NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
     "test": "cross-env NODE_ENV=test node --test"
   },
