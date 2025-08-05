@@ -21,3 +21,16 @@ content-type: application/json
     "url": "http//:test2",
     "likes": 5  
 }
+
+###
+GET http://localhost:3001/api/users
+
+###
+POST http://localhost:3001/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "username": "test 2",
+    "password": "Sue Green",
+    "name": "test2",
+}
