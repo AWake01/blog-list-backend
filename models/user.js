@@ -3,6 +3,12 @@ const mongoose = require('mongoose')
 
 //MONGODB
 const userSchema = mongoose.Schema({
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog"
+    }
+  ],
   username: {
     type: String,
     required: true,

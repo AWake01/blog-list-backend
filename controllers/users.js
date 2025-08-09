@@ -7,7 +7,7 @@ const helper = require('../tests/test_helper')
 //GET
 //all
 usersRouter.get('/', async (request, response) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('blogs')
   response.json(users)
 })
 

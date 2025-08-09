@@ -5,7 +5,7 @@ POST http://localhost:3001/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    "title": "test 2",
+    "title": "test 18",
     "author": "Sue Green",
     "url": "http//:test2",
     "likes": 10  
@@ -16,7 +16,7 @@ PUT http://localhost:3001/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    "title": "test 2",
+    "title": "test 4",
     "author": "Sue Green",
     "url": "http//:test2",
     "likes": 5  
@@ -30,7 +30,7 @@ POST http://localhost:3001/api/users HTTP/1.1
 content-type: application/json
 
 {
-    "username": "",
-    "password": "Sue Green",
-    "name": "test2",
+    "username": "root",
+    "password": "root",
+    "name": "root",
 }

@@ -1,12 +1,14 @@
 const blogsRouter = require('express').Router()
-const blog = require('../models/blog')
+const { toArray } = require('lodash')
 const Blog = require("../models/blog")
+const User = require("../models/user")
+const { default: mongoose } = require('mongoose')
 //const app = require('../app')
 
 //GET
 //all
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
   response.json(blogs)
 })
 
@@ -25,14 +27,25 @@ blogsRouter.get('/:id', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
+  //Proxy first user in db
+  const users = await User.find({})
+  const proxyUserToSave = users[0]
+  console.log("User: ", proxyUserToSave)
+
+  if (!proxyUserToSave) {    return response.status(400).json({ error: 'userId missing or not valid' })  }
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes || 0, //Default to 0 if not provided
+    user: proxyUserToSave._id
   })
 
   const savedBlog = await blog.save()
+  console.log("Proxy: ", proxyUserToSave)
+  proxyUserToSave.blogs = proxyUserToSave.blogs.concat(savedBlog._id)
+  await proxyUserToSave.save()
 
   if(!savedBlog.title || !savedBlog.url){ //Must have title and url
     response.status(400).end()
