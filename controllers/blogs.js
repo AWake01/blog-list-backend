@@ -3,7 +3,16 @@ const { toArray } = require('lodash')
 const Blog = require("../models/blog")
 const User = require("../models/user")
 const { default: mongoose } = require('mongoose')
+const jwt = require('jsonwebtoken')
 //const app = require('../app')
+
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if(authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
 
 //GET
 //all
@@ -28,24 +37,31 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
   //Proxy first user in db
-  const users = await User.find({})
-  const proxyUserToSave = users[0]
-  console.log("User: ", proxyUserToSave)
+  // const users = await User.find({})
+  // const proxyUserToSave = users[0]
+  // console.log("User: ", proxyUserToSave)
 
-  if (!proxyUserToSave) {    return response.status(400).json({ error: 'userId missing or not valid' })  }
+  //Token vallidation to allow POST
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  if(!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+
+  if (!user) {    return response.status(400).json({ error: 'userId missing or not valid' })  }
 
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes || 0, //Default to 0 if not provided
-    user: proxyUserToSave._id
+    user: user._id
   })
 
   const savedBlog = await blog.save()
-  console.log("Proxy: ", proxyUserToSave)
-  proxyUserToSave.blogs = proxyUserToSave.blogs.concat(savedBlog._id)
-  await proxyUserToSave.save()
+  console.log("Proxy: ", user)
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
 
   if(!savedBlog.title || !savedBlog.url){ //Must have title and url
     response.status(400).end()
