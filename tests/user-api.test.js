@@ -16,7 +16,7 @@ const api = supertest(app)
 beforeEach(async () => {
     console.log('Creating')
     await User.deleteMany({})
-    const hash = await bcrypt.hash('test 1', 10)
+    const hash = await bcrypt.hash('root', 10)
     const newUser = new User({username: 'root', passwordHash: hash, name: 'root name'})
     await newUser.save()
     console.log('Created')

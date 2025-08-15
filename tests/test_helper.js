@@ -1,6 +1,11 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+const app = require('../app')
+const supertest = require('supertest')
+const jwt = require('jsonwebtoken')
+const api = supertest(app)
+
 const initalBlogs = [
     {
         _id: "5a422a851b54a676234d17f7",
@@ -67,9 +72,38 @@ const usersInDB = async () => {
     return users.map(users => users.toJSON())
 }
 
+const getTokenForTest = async () => {
+    // const username = usersInDB()[0]
+    // const password = usersInDB()[0]
+
+    // const login = {
+    //     username: username,
+    //     password: password
+    // }
+
+    // const loginRequest = await api
+    //     .post('/api/login')
+    //     .send(login)
+
+    // const token = loginRequest.body.token
+
+    const users = await User.find({})
+    const user = users[0]
+
+    const userForToken = {
+        username: user.username,
+        id: user.id,
+    }
+
+    const token = jwt.sign(userForToken, process.env.SECRET)
+
+    return token
+}
+
 module.exports = {
     initalBlogs,
     blogsInDB,
     getBlogById,
     usersInDB,
+    getTokenForTest
 }

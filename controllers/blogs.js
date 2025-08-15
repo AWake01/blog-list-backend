@@ -28,13 +28,6 @@ blogsRouter.get('/:id', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
-  //Proxy first user in db
-  // const users = await User.find({})
-  // const proxyUserToSave = users[0]
-  // console.log("User: ", proxyUserToSave)
-
-  //Token vallidation to allow POST
-  //const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if(!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
@@ -52,12 +45,11 @@ blogsRouter.post('/', async (request, response) => {
   })
 
   const savedBlog = await blog.save()
-  console.log("Proxy: ", user)
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
   if(!savedBlog.title || !savedBlog.url){ //Must have title and url
-    response.status(400).end()
+    response.status(400)
   } else {
     response.status(201).json(savedBlog)
   }

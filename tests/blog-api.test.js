@@ -3,9 +3,11 @@ const { test, after, beforeEach, describe } = require('node:test')
 
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const helper = require('./test_helper')
 const { initialNotes } = require('../../../part3 Programming a server with NodeJS and Express/partA/REST/tests/test_helper')
@@ -17,6 +19,12 @@ beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initalBlogs)
   //console.log('Created')
+
+  await User.deleteMany({})
+  const hash = await bcrypt.hash('root', 10)
+  const newUser = new User({blogs: [], username: 'root', passwordHash: hash, name: 'root name'})
+  await newUser.save()
+  console.log('Created')
 })
 
 //GET requests
@@ -42,38 +50,68 @@ describe('GET requests', () => {
 
 //POST requests
 describe('POST requests', () => {
-    test('POST adds a new blog', async () => {     //Pass
+    test('POST adds a new blog with valid token', async () => {
         const newBlog = {
-            title: "New Blog",
+            title: "POST adds a new blog with valid token",
             author: "New Author ",
             url: "https://newBlog.com/",
             likes: 5,
         }
 
+        const token = await helper.getTokenForTest()
+
         await api
           .post('/api/blogs')
           .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
           .expect(201)
           .expect('Content-Type', /application\/json/)
 
-        const response = await api.get('/api/blogs')
+         const blogs = await api.get('/api/blogs')
 
-        const titles = response.body.map(blog => blog.title)
+         const titles = blogs.body.map(blog => blog.title)
 
-        assert.strictEqual(response.body.length, helper.initalBlogs.length + 1)
-        assert(titles.includes('New Blog'))
+         assert.strictEqual(blogs.body.length, helper.initalBlogs.length + 1)
+         assert(titles.includes(newBlog.title))
+    })
+
+    test('POST new blog fails with invalid token', async () => {
+        const newBlog = {
+            title: "POST adds a new blog with invalid token",
+            author: "New Author ",
+            url: "https://newBlog.com/",
+            likes: 5,
+        }
+
+        const token = 'eyJhbGciOiJIUz78NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI9dnJvb3QiLCJpaCI6IjY4OTc2ZDI0Mjg5ZDg3Yjg3Y2E5Yjg5NSIsImlhdCI6MTc1NTI2MzU4NSwiZXhwIjdxNzU1MjY3MTg1fQ.zsOP0UatI0EeSxGJjGidI_FzyhipWPBEtkV5zp52Dgc'   //Fake token
+
+        const response = await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set( { Authorization: token })
+          .expect(401)
+          .expect('Content-Type', /application\/json/)
+
+        const blogs = await api.get('/api/blogs')
+
+        assert.strictEqual(blogs.body.length, helper.initalBlogs.length)
+        assert.strictEqual(response.body.error, 'token invalid' )
     })
 
     test('POST likes property defaults to zero if missing', async () => {     //Pass
         const newBlog = {
             title: "Like Missing",
             author: "Author Like Missing ",
-            url: "https://likeMissing.com/",
+            url: "https://likeMissing.com/"
         }
+
+        const token = await helper.getTokenForTest()
+        console.log("TOKEN: ", token)
 
         await api
           .post('/api/blogs')
           .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
           .expect(201)
           .expect('Content-Type', /application\/json/)
 
@@ -90,10 +128,15 @@ describe('POST requests', () => {
             likes: 2,
         }
 
+        const token = await helper.getTokenForTest()
+        console.log("TOKEN: ", token)
+
         await api
           .post('/api/blogs')
+          .set('Authorization', `Bearer ${token}`)
           .send(newBlog)
           .expect(400)
+          .expect('Content-Type', /application\/json/)
     })
     test('POST status 400 if url attribute is missing', async () => {     //Pass
         const newBlog = {
@@ -102,10 +145,15 @@ describe('POST requests', () => {
             likes: 3,
         }
 
+        const token = await helper.getTokenForTest()
+        console.log("TOKEN: ", token)
+
         await api
           .post('/api/blogs')
           .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
           .expect(400)
+          .expect('Content-Type', /application\/json/)
     })
     test('POST status 400 if title and url attribute are missing', async () => {     //Pass
         const newBlog = {
@@ -113,18 +161,22 @@ describe('POST requests', () => {
             likes: 3,
         }
 
+        const token = await helper.getTokenForTest()
+        console.log("TOKEN: ", token)
+
         await api
           .post('/api/blogs')
           .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
           .expect(400)
+          .expect('Content-Type', /application\/json/)
     })
 })
 
 //DELETE requests
 describe('DELETE requests', () => {
-    test('a blog can be deleted', async () => {
+    test('a blog can be deleted with a valid token', async () => {
         const blogsAtStart = await helper.blogsInDB()
-        const blogToDelete = blogsAtStart[0]
 
         await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
