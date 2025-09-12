@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
-    "test": "cross-env NODE_ENV=test node --test"
+    "test": "cross-env NODE_ENV=test node --test",
+    "start:test": "cross-env NODE_ENV=test node --watch index.js"
   },
   "author": "Sandy Wake",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.1"
