@@ -4,7 +4,6 @@ const Blog = require("../models/blog")
 const User = require("../models/user")
 const { default: mongoose } = require('mongoose')
 const jwt = require('jsonwebtoken')
-//const app = require('../app')
 
 //GET
 //all
