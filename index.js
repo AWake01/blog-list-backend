@@ -3,7 +3,7 @@ const config = require('./utils/config')
 const logger = require('./utils/logger')
 
 //CONNECTION
-const PORT = config.PORT || 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`)
 })
